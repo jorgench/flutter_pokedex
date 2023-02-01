@@ -30,3 +30,7 @@ const colorWater = Color(0xFF6493EB);
 
 const colorBodySurface = _extraLightColor;
 const colorBodyText = _darkColor;
+const colorCardSurface = _whiteColor;
+const colorCardText = _mediumColor;
+
+const colorShadow = _darkColor;
