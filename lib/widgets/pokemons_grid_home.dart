@@ -14,25 +14,46 @@ class PokemonsGridHome extends StatefulWidget {
 
 class _PokemonsGridHomeState extends State<PokemonsGridHome> {
   List<ResultPokemonListItem> pokemons = [];
+  late ScrollController _controller;
+
+  int _page = 0;
+  final int _itemForPage = 20;
+  bool _loadingServices = false;
 
   @override
   void initState() {
     super.initState();
 
-    getListOfPokemons(50, 0).then((value) {
-      print(value);
-      if (value?.results != null) {
-        value!.results.forEach((element) {
-          pokemons.add(element);
-        });
+    _controller = ScrollController();
+    _controller.addListener(() {
+      if (_controller.position.pixels >=
+          _controller.position.maxScrollExtent - 200) {
+        _callServices();
       }
-      updateList();
+      ;
     });
+
+    _callServices();
+  }
+
+  _callServices() {
+    if (!_loadingServices) {
+      _loadingServices = true;
+      getListOfPokemons(_itemForPage, _page * _itemForPage).then((value) {
+        if (value?.results != null) {
+          value!.results.forEach((element) {
+            pokemons.add(element);
+          });
+        }
+        _loadingServices = false;
+        updateList();
+      });
+
+      _page++;
+    }
   }
 
   updateList() {
-    print('update list');
-    print('list length ${pokemons.length}');
     setState(() {});
   }
 
@@ -42,6 +63,7 @@ class _PokemonsGridHomeState extends State<PokemonsGridHome> {
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height,
       child: GridView.builder(
+        controller: _controller,
         gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
             maxCrossAxisExtent: 120,
             childAspectRatio: 3 / 3.5,
